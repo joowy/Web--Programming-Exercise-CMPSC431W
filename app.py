@@ -2,9 +2,6 @@ from flask import Flask, render_template, request, redirect, url_for
 import sqlite3 as sql
 
 
-from livereload import Server
-
-
 app = Flask(__name__)
 
 HOST = "127.0.0.1"
@@ -21,10 +18,13 @@ def index():
 def navigate():
     select = request.args.get("navigate")  # get value of form
     if select == "input":
+        # navigate to the input route
         return redirect(url_for("input"))
     elif select == "delete":
+        # navigate to the delete route
         return redirect(url_for("delete"))
-    return redirect(url_for("index"))
+    else:
+        return redirect(url_for("index"))
 
 
 @app.route("/input", methods=["POST", "GET"])
@@ -53,6 +53,7 @@ def delete():
 
 def valid_name(first_name, last_name):
     CONNECTION = sql.connect("database.db")
+    # create a id attribute pid that is a primary key
     CONNECTION.execute(
         "CREATE TABLE IF NOT EXISTS users (pid INTEGER PRIMARY KEY AUTOINCREMENT, firstname TEXT, lastname TEXT);"
     )
@@ -66,9 +67,12 @@ def valid_name(first_name, last_name):
 
 def delete_patient(first_name, last_name):
     CONNECTION = sql.connect("database.db")
+    # create a id attribute pid that is a primary key
     CONNECTION.execute(
         "CREATE TABLE IF NOT EXISTS users (pid INTEGER PRIMARY KEY AUTOINCREMENT, firstname TEXT, lastname TEXT);"
     )
+
+    # delete users with matching firstname and lastname using WHERE
     CONNECTION.execute(
         "DELETE FROM users WHERE firstname=? and lastname=?;", (first_name, last_name)
     )
@@ -78,5 +82,4 @@ def delete_patient(first_name, last_name):
 
 
 if __name__ == "__main__":
-
     app.run(host=HOST, port=PORT, debug=True)
